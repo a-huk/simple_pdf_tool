@@ -1,5 +1,6 @@
 import PyPDF2
 from os import path
+from PIL import Image
 
 def merge_files(file_list):
     number_files = len(file_list)
@@ -44,9 +45,25 @@ def rotate_pages(deg,file,page_list):
     output_pdf.close()
     input_pdf.close()
 
+def img_pdf(image_list):
+    appended_images = []
+    initial_img = Image.open(image_list[0]).convert('RGB')
+    if len(image_list) == 1:
+        initial_img.save("imagepdf.pdf", "PDF" ,resolution=100.0, save_all=True)
+    else:
+        i = 0
+        for image in image_list:
+            if i == 0:
+                pass
+            else:
+                print(image)
+                appended_images.append(Image.open(image).convert('RGB'))
+            i = i+1
+        print(appended_images)
+        initial_img.save("imagepdf.pdf", "PDF" ,resolution=100.0, save_all=True, append_images=appended_images)
 
 
-choice = input("What do you want to do: \n 1)Merge PDFs\n 2)Rotate PDFs")
+choice = input("What do you want to do: \n 1)Merge PDFs\n 2)Rotate PDFs\n 3)Images to PDF")
 
 if choice == "1":
     file_list = input("Enter the path of the different files separated by ';' :")
@@ -78,6 +95,16 @@ if choice == "2":
     else :
         rotate_pages(degrees,file,page_list)
         print("Done")
+
+if choice == "3":
+    image_list = input("Enter the path of the different files separated by ';' :")
+    image_list = image_list.strip().split(";")
+    for image in image_list:
+        if not path.exists(image):
+            print("One or more of the images do not exist or your image list format is wrong")
+            exit(0)
+    img_pdf(image_list)
+
 
 else:
     print("Not a valid choice")
